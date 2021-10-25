@@ -2,6 +2,7 @@ import './App.css'
 import HomePage from './pages/HomePage/HomePage'
 import ShopPage from './pages/ShopPage/ShopPage'
 import { Switch, Route } from 'react-router-dom'
+import Header from './components/header/Header'
 
 const HatsPage = () => (
   <div className='example'>
@@ -12,6 +13,7 @@ const HatsPage = () => (
 function App() {
   return (
     <div className='App'>
+      <Header />
       <Switch>
         <Route path='/hats' component={HatsPage} />
         <Route path='/shop' component={ShopPage} />
