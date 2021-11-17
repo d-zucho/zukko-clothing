@@ -1,11 +1,12 @@
 import React from 'react'
 import './App.css'
+import { onSnapshot, doc } from 'firebase/firestore'
 import HomePage from './pages/HomePage/HomePage'
 import ShopPage from './pages/ShopPage/ShopPage'
 import { Switch, Route } from 'react-router-dom'
 import Header from './components/header/Header'
 import LoginPage from './pages/LoginPage/LoginPage'
-import { auth } from './assets/firebaseConfig'
+import { auth, db, createUserProfileDoc } from './assets/firebaseConfig'
 
 const HatsPage = () => (
   <div className='example'>
@@ -25,10 +26,21 @@ class App extends React.Component {
   unsubscribeFromAuth = null
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
-      this.setState({ currentUser: user })
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        await createUserProfileDoc(userAuth)
 
-      console.log(user)
+        onSnapshot(doc(db, 'users', userAuth.uid), (doc) => {
+          this.setState({
+            currentUser: {
+              id: doc.id,
+              ...doc.data(),
+            },
+          })
+        })
+      } else {
+        this.setState({ currentUser: userAuth })
+      }
     })
   }
 
